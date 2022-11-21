@@ -1,4 +1,4 @@
 ![](https://img.shields.io/github/license/yuki-miyakoshi/youkey_stepper)
 
-# ブロック崩しゲーム
-## brick-breaker
+# テスト開発用レジストリ
+## Test-Development-Games
