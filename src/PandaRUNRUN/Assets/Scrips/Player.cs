@@ -31,6 +31,7 @@
      private bool canHeight = false;
      private bool canTime = false;
      private bool isContinue = false;
+     private bool nonDownAnim = false;
      private float jumpPos = 0.0f; 
      private float otherJumpHeight = 0.0f;
      private float dashTime = 0.0f;
@@ -43,6 +44,8 @@
      private float ySpeed = 0.0f;
      private int right_push_flag = 0;
      private int left_push_flag = 0;
+     private string deadAreaTag = "DeadArea";
+     private string hitAreaTag = "HitArea";
      #endregion 
 
      void Start() 
@@ -341,8 +344,9 @@
                   }
                   else
                   {
-                      anim.Play("player_down");
-                      isDown = true;
+                    //   anim.Play("player_down");
+                    //   isDown = true;
+                      ReceiveDamage(true); //New!
                       break;
                   }
               }
@@ -355,7 +359,14 @@
 /// <returns></returns>
     public bool IsContinueWaiting()
     {
-　　    return IsDownAnimEnd();
+        if (GManager.instance.isGameOver)  // New!
+        {
+            return false;
+        }
+        else
+        {
+            return IsDownAnimEnd() || nonDownAnim;  // New!
+        }    
     }
 
     //ダウンアニメーションが完了しているかどうか
@@ -374,4 +385,52 @@
 　　    }
 　　    return false;
     }
+
+    /// <summary> 
+     /// コンティニューする 
+     /// </summary> 
+     public void ContinuePlayer() 
+     {
+          isDown = false;
+          anim.Play("player_stand");
+          isJump = false;
+          isOtherJump = false;
+          isRun = false;
+          isContinue = true;
+          nonDownAnim = false;
+     }
+    private void ReceiveDamage(bool downAnim) 
+{ 
+    if (isDown)
+    {     
+         return;
+    }
+    else
+    {
+         if (downAnim)
+         {
+             anim.Play("player_down");
+         }
+         else
+         {
+             nonDownAnim = true;
+         }
+         isDown = true;
+         GManager.instance.SubHeartNum();
+     }
+}
+private void OnTriggerEnter2D(Collider2D collision)	
+{
+        if(collision.tag == deadAreaTag)
+	{
+            ReceiveDamage(false);
+	}
+	else if(collision.tag == hitAreaTag)
+	{
+            ReceiveDamage(true);
+	}
+}
+
+     
+      
  }
